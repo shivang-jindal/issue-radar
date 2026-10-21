@@ -1,0 +1,595 @@
+{
+  "clock": "2026-10-20T12:00:00.000Z",
+  "repos": {
+    "acme/widgets": {
+      "meta": {
+        "id": 1001,
+        "name": "widgets",
+        "full_name": "acme/widgets",
+        "html_url": "https://github.com/acme/widgets",
+        "private": false,
+        "default_branch": "main",
+        "language": "TypeScript",
+        "pushed_at": "2026-10-19T09:00:00Z",
+        "archived": false,
+        "open_issues_count": 8
+      },
+      "issues": [
+        {
+          "number": 101,
+          "title": "Stale docs on route handlers",
+          "state": "open",
+          "user": {
+            "login": "newbie-nina",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "good first issue"
+            },
+            {
+              "name": "docs"
+            }
+          ],
+          "comments": 3,
+          "created_at": "2026-10-15T12:00:00Z",
+          "updated_at": "2026-10-19T12:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/101",
+          "body": "The docs for route handlers are out of date after the v5 release.\n\nSteps to reproduce:\n1. Open the docs page for route handlers\n2. Compare it against `src/app/api/health/route.ts`\n\nExpected behavior: examples use the new `context` argument.\n\nAcceptance criteria:\n- [ ] Update `src/app/docs/route-handlers.md` with the new signature\n- [ ] Add an example for the dynamic segment route\n- [ ] Make sure the snippets compile\n\nThe doctest runner currently fails with:\n    at compileExample (scripts/docs-check.ts:42:11)"
+        },
+        {
+          "number": 102,
+          "title": "Clipboard paste loses formatting in Safari",
+          "state": "open",
+          "user": {
+            "login": "webby-wren",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "help wanted"
+            },
+            {
+              "name": "bug"
+            }
+          ],
+          "comments": 6,
+          "created_at": "2026-09-20T10:00:00Z",
+          "updated_at": "2026-10-10T08:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/102",
+          "body": "Pasting rich text into the editor drops all formatting in Safari 18.\n\nRepro steps:\n1. Open the paste demo in Safari\n2. Copy a table from a docs site\n3. Paste - output is plain text only\n\nChrome and Firefox are fine. Suspect `packages/editor/src/paste/rich.ts` only handles the `text/html` type conditionally."
+        },
+        {
+          "number": 103,
+          "title": "Add keyboard shortcut for split view",
+          "state": "open",
+          "user": {
+            "login": "keyby-kris",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "good first issue"
+            }
+          ],
+          "comments": 4,
+          "created_at": "2026-08-01T09:00:00Z",
+          "updated_at": "2026-10-01T09:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/103",
+          "body": "Split view exists but there is no keyboard shortcut. Most editors use Ctrl+backslash.\n\nAcceptance criteria:\n- [ ] Add a binding for toggle split\n- [ ] Document it in the shortcuts panel\n\nA previous attempt went stale after review comments; the history is worth reading first."
+        },
+        {
+          "number": 104,
+          "title": "Nightly snapshot job fails on ARM",
+          "state": "open",
+          "user": {
+            "login": "opsy-ox",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "help wanted"
+            }
+          ],
+          "comments": 3,
+          "created_at": "2026-03-10T08:00:00Z",
+          "updated_at": "2026-04-20T08:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/104",
+          "body": "The nightly snapshot intermittently fails on ARM runners with exit code 137 (OOM?).\nLogs from the last week are collected in the first comment."
+        },
+        {
+          "number": 105,
+          "title": "Deeply nested config keys are ignored",
+          "state": "open",
+          "user": {
+            "login": "cfgy-cat",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "good first issue"
+            },
+            {
+              "name": "config"
+            }
+          ],
+          "comments": 1,
+          "created_at": "2026-10-12T10:00:00Z",
+          "updated_at": "2026-10-18T10:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/105",
+          "body": "When a config key is nested more than three levels deep it silently vanishes after a round trip through the loader. I first noticed this while migrating a very large configuration file from our previous tool, and after some hours bisecting I narrowed it down to the merge step rather than the parse step, but I have not had time to dig further. The confusing part is that shallow keys survive fine, and the failure only shows up on write, so reads look normal until you reload the file. I tried a few workarounds with dotted aliases but those broke other things in ways that were hard to explain to my teammates, and eventually we agreed to keep the configuration shallow for now. The right fix probably belongs somewhere around the flattening logic, but a maintainer should confirm that before anyone starts moving code around. Reproduction requires a config with at least four nested sections and a reload cycle."
+        },
+        {
+          "number": 106,
+          "title": "Typo in README badges section",
+          "state": "open",
+          "user": {
+            "login": "proofy-pat",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "help wanted"
+            }
+          ],
+          "comments": 2,
+          "created_at": "2026-10-17T14:00:00Z",
+          "updated_at": "2026-10-20T09:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/106",
+          "body": "Bdaindge alt text is wrong on line 12."
+        },
+        {
+          "number": 107,
+          "title": "Fix flaky date test",
+          "state": "open",
+          "user": {
+            "login": "prby-sam",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "good first issue"
+            }
+          ],
+          "comments": 0,
+          "created_at": "2026-10-14T10:00:00Z",
+          "updated_at": "2026-10-16T10:00:00Z",
+          "html_url": "https://github.com/acme/widgets/pull/555",
+          "body": "Cross-links issue #108.",
+          "pull_request": {
+            "url": "https://api.github.com/repos/acme/widgets/pulls/555",
+            "html_url": "https://github.com/acme/widgets/pull/555",
+            "diff_url": "https://github.com/acme/widgets/pull/555.diff"
+          }
+        },
+        {
+          "number": 108,
+          "title": "Support .editorconfig in template expansion",
+          "state": "open",
+          "user": {
+            "login": "tmply-tess",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "good first issue"
+            },
+            {
+              "name": "editor"
+            }
+          ],
+          "comments": 0,
+          "created_at": "2026-08-20T10:00:00Z",
+          "updated_at": "2026-09-10T10:00:00Z",
+          "html_url": "https://github.com/acme/widgets/issues/108",
+          "body": "Template expansion should honor .editorconfig indent settings so generated files match the host project.\n\nAcceptance criteria:\n- [ ] Read indent style and size from .editorconfig\n- [ ] Fall back to defaults when the file is absent\n\nEntry points: `src/templates/expand.ts` and `src/templates/indent.ts`."
+        }
+      ],
+      "timelines": {
+        "101": [
+          {
+            "event": "labeled",
+            "created_at": "2026-10-15T12:05:00Z",
+            "actor": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "label": {
+              "name": "good first issue"
+            }
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-15T16:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Confirmed on main — docs are stale. PRs welcome!"
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-16T09:00:00Z",
+            "user": {
+              "login": "newbie-nina",
+              "type": "User"
+            },
+            "body": "Taking this one."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-17T10:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Ping me when the snippets build."
+          }
+        ],
+        "102": [
+          {
+            "event": "commented",
+            "created_at": "2026-09-21T10:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Reproduced in Safari 18."
+          },
+          {
+            "event": "cross-referenced",
+            "created_at": "2026-09-24T11:00:00Z",
+            "actor": {
+              "login": "sam-coder",
+              "type": "User"
+            },
+            "source": {
+              "type": "pull_request",
+              "issue": {
+                "number": 701,
+                "state": "open",
+                "title": "Handle text/html paste in Safari",
+                "user": {
+                  "login": "sam-coder",
+                  "type": "User"
+                },
+                "html_url": "https://github.com/acme/widgets/pull/701",
+                "pull_request": {
+                  "url": "https://api.github.com/repos/acme/widgets/pulls/701",
+                  "html_url": "https://github.com/acme/widgets/pull/701"
+                }
+              }
+            }
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-09-22T09:30:00Z",
+            "user": {
+              "login": "webby-wren",
+              "type": "User"
+            },
+            "body": "Happy to test patches."
+          },
+          {
+            "event": "cross-referenced",
+            "created_at": "2026-10-02T08:00:00Z",
+            "actor": {
+              "login": "other-oth",
+              "type": "User"
+            },
+            "source": {
+              "type": "pull_request",
+              "issue": {
+                "number": 715,
+                "state": "open",
+                "title": "Rewrite clipboard adapter",
+                "user": {
+                  "login": "other-oth",
+                  "type": "User"
+                },
+                "html_url": "https://github.com/acme/widgets/pull/715",
+                "pull_request": {
+                  "url": "https://api.github.com/repos/acme/widgets/pulls/715",
+                  "html_url": "https://github.com/acme/widgets/pull/715"
+                }
+              }
+            }
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-09-25T12:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Two PRs open — please coordinate."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-01T10:00:00Z",
+            "user": {
+              "login": "reviewy-ron",
+              "type": "User"
+            },
+            "body": "Left notes on both."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-05T10:00:00Z",
+            "user": {
+              "login": "webby-wren",
+              "type": "User"
+            },
+            "body": "Thanks all."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-09T16:00:00Z",
+            "user": {
+              "login": "qa-queen",
+              "type": "User"
+            },
+            "body": "Still reproducible on 18.1."
+          }
+        ],
+        "103": [
+          {
+            "event": "commented",
+            "created_at": "2026-08-06T09:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Sure — pick a binding and document it."
+          },
+          {
+            "event": "cross-referenced",
+            "created_at": "2026-08-15T10:00:00Z",
+            "actor": {
+              "login": "ghost-1",
+              "type": "User"
+            },
+            "source": {
+              "type": "pull_request",
+              "issue": {
+                "number": 450,
+                "state": "closed",
+                "title": "Add split view shortcut",
+                "user": {
+                  "login": "ghost-1",
+                  "type": "User"
+                },
+                "html_url": "https://github.com/acme/widgets/pull/450",
+                "pull_request": {
+                  "url": "https://api.github.com/repos/acme/widgets/pulls/450",
+                  "html_url": "https://github.com/acme/widgets/pull/450",
+                  "merged_at": null
+                }
+              }
+            }
+          },
+          {
+            "event": "cross-referenced",
+            "created_at": "2026-09-01T10:00:00Z",
+            "actor": {
+              "login": "quitter-2",
+              "type": "User"
+            },
+            "source": {
+              "type": "pull_request",
+              "issue": {
+                "number": 499,
+                "state": "closed",
+                "title": "Shortcut for toggle split",
+                "user": {
+                  "login": "quitter-2",
+                  "type": "User"
+                },
+                "html_url": "https://github.com/acme/widgets/pull/499",
+                "pull_request": {
+                  "url": "https://api.github.com/repos/acme/widgets/pulls/499",
+                  "html_url": "https://github.com/acme/widgets/pull/499",
+                  "merged_at": null
+                }
+              }
+            }
+          },
+          {
+            "event": "cross-referenced",
+            "created_at": "2026-08-25T10:00:00Z",
+            "actor": {
+              "login": "merged-mia",
+              "type": "User"
+            },
+            "source": {
+              "type": "pull_request",
+              "issue": {
+                "number": 410,
+                "state": "closed",
+                "title": "Document existing bindings",
+                "user": {
+                  "login": "merged-mia",
+                  "type": "User"
+                },
+                "html_url": "https://github.com/acme/widgets/pull/410",
+                "pull_request": {
+                  "url": "https://api.github.com/repos/acme/widgets/pulls/410",
+                  "html_url": "https://github.com/acme/widgets/pull/410",
+                  "merged_at": "2026-08-30T10:00:00Z"
+                }
+              }
+            }
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-08-10T10:00:00Z",
+            "user": {
+              "login": "keyby-kris",
+              "type": "User"
+            },
+            "body": "Started looking."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-09-05T10:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "The first attempt stalled — see PR #450."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-09-20T10:00:00Z",
+            "user": {
+              "login": "helpery-ha",
+              "type": "User"
+            },
+            "body": "I can review a fresh attempt."
+          }
+        ],
+        "104": [
+          {
+            "event": "commented",
+            "created_at": "2026-04-20T09:00:00Z",
+            "user": {
+              "login": "github-actions[bot]",
+              "type": "Bot"
+            },
+            "body": "⚠️ Stale: this issue has been automatically marked for closure."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-04-21T09:00:00Z",
+            "user": {
+              "login": "github-actions[bot]",
+              "type": "Bot"
+            },
+            "body": "⚠️ Stale: closing in 7 days without activity."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-04-22T09:00:00Z",
+            "user": {
+              "login": "github-actions[bot]",
+              "type": "Bot"
+            },
+            "body": "🤖 This issue has been closed."
+          }
+        ],
+        "105": [
+          {
+            "event": "commented",
+            "created_at": "2026-10-12T11:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Good find — the flattener drops deep keys. Small fix expected."
+          }
+        ],
+        "106": [
+          {
+            "event": "commented",
+            "created_at": "2026-10-17T20:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Nice catch, feel free to PR."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-18T08:00:00Z",
+            "user": {
+              "login": "proofy-pat",
+              "type": "User"
+            },
+            "body": "Will do."
+          }
+        ],
+        "108": []
+      }
+    },
+    "beta/kit": {
+      "meta": {
+        "id": 1002,
+        "name": "kit",
+        "full_name": "beta/kit",
+        "html_url": "https://github.com/beta/kit",
+        "private": false,
+        "default_branch": "main",
+        "language": "Python",
+        "pushed_at": "2026-04-01T12:00:00Z",
+        "archived": false,
+        "open_issues_count": 2
+      },
+      "issues": [
+        {
+          "number": 201,
+          "title": "CLI: --json output misses the exit code field",
+          "state": "open",
+          "user": {
+            "login": "cliby-cam",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "good first issue"
+            },
+            {
+              "name": "cli"
+            }
+          ],
+          "comments": 2,
+          "created_at": "2026-10-18T08:00:00Z",
+          "updated_at": "2026-10-20T08:00:00Z",
+          "html_url": "https://github.com/beta/kit/issues/201",
+          "body": "Machine-readable output drops the process exit code, so wrappers always report success.\n\nSteps to reproduce:\n1. Run `kit check --json` against a broken project\n2. Inspect the JSON: no `exitCode` key\n\nExpected behavior: the JSON document includes `exitCode` next to `status`.\n\nAcceptance criteria:\n- [ ] Emit `exitCode` in `kit/cli/output.py`\n- [ ] Cover it in the CLI tests"
+        },
+        {
+          "number": 202,
+          "title": "Docs: install instructions fail on Alpine",
+          "state": "open",
+          "user": {
+            "login": "alpy-ana",
+            "type": "User"
+          },
+          "labels": [
+            {
+              "name": "help wanted"
+            }
+          ],
+          "comments": 0,
+          "created_at": "2026-10-01T08:00:00Z",
+          "updated_at": "2026-10-12T08:00:00Z",
+          "html_url": "https://github.com/beta/kit/issues/202",
+          "body": "The install guide assumes glibc; on Alpine the linker step fails.\n\nAcceptance criteria:\n- [ ] Document the musl variant\n- [ ] Mention the musllinux wheel in the quickstart"
+        }
+      ],
+      "timelines": {
+        "201": [
+          {
+            "event": "commented",
+            "created_at": "2026-10-18T11:00:00Z",
+            "user": {
+              "login": "maintainer-moe",
+              "type": "User"
+            },
+            "body": "Confirmed — output.py drops the code. Go ahead."
+          },
+          {
+            "event": "commented",
+            "created_at": "2026-10-19T09:00:00Z",
+            "user": {
+              "login": "cliby-cam",
+              "type": "User"
+            },
+            "body": "Thanks, starting today."
+          }
+        ],
+        "202": []
+      }
+    }
+  }
+}

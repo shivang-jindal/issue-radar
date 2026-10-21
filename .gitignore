@@ -1,0 +1,14 @@
+# Zero-dependency project: nothing is ever installed, so an accidental
+# dependency tree is never real content.
+**/node_modules/**
+# ...except the pinned test fixtures that simulate installed packages
+# (ctxc skip-proofing, dep-doctor installed-version/CHANGELOG reads).
+!test/fixtures/**/node_modules/**
+
+# editor/OS noise
+*.log
+.DS_Store
+Thumbs.db
+
+# runtime cache when dogfooding radar in this repo
+/.radar-cache.json

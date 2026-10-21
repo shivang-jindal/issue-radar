@@ -1,0 +1,235 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-20T12:00:00.000Z",
+  "results": [
+    {
+      "repo": "acme/widgets",
+      "number": 101,
+      "url": "https://github.com/acme/widgets/issues/101",
+      "title": "Stale docs on route handlers",
+      "score": 0.9179,
+      "reasons": [
+        "matches your src/app work",
+        "maintainer answers in ~4h",
+        "0 competing PRs"
+      ],
+      "signals": {
+        "match": 1,
+        "resp": 0.9927,
+        "ncomp": 1,
+        "naband": 1,
+        "scope": 1,
+        "fresh": 0.9892,
+        "repro": 1,
+        "foot": 0,
+        "act": 1
+      },
+      "labels": [
+        "good first issue",
+        "docs"
+      ],
+      "updated_at": "2026-10-19T12:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "beta/kit",
+      "number": 201,
+      "url": "https://github.com/beta/kit/issues/201",
+      "title": "CLI: --json output misses the exit code field",
+      "score": 0.798,
+      "reasons": [
+        "maintainer answers in ~3h",
+        "0 competing PRs",
+        "no abandoned attempts"
+      ],
+      "signals": {
+        "match": 0,
+        "resp": 1,
+        "ncomp": 1,
+        "naband": 1,
+        "scope": 0.9,
+        "fresh": 1,
+        "repro": 1,
+        "foot": 0.875,
+        "act": 1
+      },
+      "labels": [
+        "good first issue",
+        "cli"
+      ],
+      "updated_at": "2026-10-20T08:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "acme/widgets",
+      "number": 105,
+      "url": "https://github.com/acme/widgets/issues/105",
+      "title": "Deeply nested config keys are ignored",
+      "score": 0.7249,
+      "reasons": [
+        "maintainer answers in ~1h",
+        "0 competing PRs",
+        "no abandoned attempts"
+      ],
+      "signals": {
+        "match": 0.2231,
+        "resp": 1,
+        "ncomp": 1,
+        "naband": 1,
+        "scope": 0.2424,
+        "fresh": 0.9567,
+        "repro": 1,
+        "foot": 0.5,
+        "act": 1
+      },
+      "labels": [
+        "good first issue",
+        "config"
+      ],
+      "updated_at": "2026-10-18T10:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "acme/widgets",
+      "number": 106,
+      "url": "https://github.com/acme/widgets/issues/106",
+      "title": "Typo in README badges section",
+      "score": 0.6174,
+      "reasons": [
+        "maintainer answers in ~6h",
+        "0 competing PRs",
+        "no abandoned attempts"
+      ],
+      "signals": {
+        "match": 0.2231,
+        "resp": 0.9806,
+        "ncomp": 1,
+        "naband": 1,
+        "scope": 0,
+        "fresh": 1,
+        "repro": 0,
+        "foot": 0.5,
+        "act": 1
+      },
+      "labels": [
+        "help wanted"
+      ],
+      "updated_at": "2026-10-20T09:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "acme/widgets",
+      "number": 108,
+      "url": "https://github.com/acme/widgets/issues/108",
+      "title": "Support .editorconfig in template expansion",
+      "score": 0.5982,
+      "reasons": [
+        "matches your src/templates work",
+        "0 competing PRs",
+        "no abandoned attempts"
+      ],
+      "signals": {
+        "match": 0.9867,
+        "resp": 0,
+        "ncomp": 1,
+        "naband": 1,
+        "scope": 1,
+        "fresh": 0.2058,
+        "repro": 0,
+        "foot": 0.5,
+        "act": 0
+      },
+      "labels": [
+        "good first issue",
+        "editor"
+      ],
+      "updated_at": "2026-09-10T10:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "beta/kit",
+      "number": 202,
+      "url": "https://github.com/beta/kit/issues/202",
+      "title": "Docs: install instructions fail on Alpine",
+      "score": 0.568,
+      "reasons": [
+        "matches your fingerprint",
+        "0 competing PRs",
+        "no abandoned attempts"
+      ],
+      "signals": {
+        "match": 1,
+        "resp": 0,
+        "ncomp": 1,
+        "naband": 1,
+        "scope": 0.9,
+        "fresh": 0,
+        "repro": 0,
+        "foot": 0.5,
+        "act": 0
+      },
+      "labels": [
+        "help wanted"
+      ],
+      "updated_at": "2026-10-12T08:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "acme/widgets",
+      "number": 102,
+      "url": "https://github.com/acme/widgets/issues/102",
+      "title": "Clipboard paste loses formatting in Safari",
+      "score": 0.5649,
+      "reasons": [
+        "maintainer answers in ~1d",
+        "no abandoned attempts",
+        "includes repro / stack trace"
+      ],
+      "signals": {
+        "match": 0,
+        "resp": 0.8717,
+        "ncomp": 0,
+        "naband": 1,
+        "scope": 0.2424,
+        "fresh": 0.7378,
+        "repro": 1,
+        "foot": 1,
+        "act": 1
+      },
+      "labels": [
+        "help wanted",
+        "bug"
+      ],
+      "updated_at": "2026-10-10T08:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    },
+    {
+      "repo": "acme/widgets",
+      "number": 103,
+      "url": "https://github.com/acme/widgets/issues/103",
+      "title": "Add keyboard shortcut for split view",
+      "score": 0.4747,
+      "reasons": [
+        "0 competing PRs",
+        "clear scope (checklist + acceptance criteria)",
+        "healthy discussion (4 comments)"
+      ],
+      "signals": {
+        "match": 0.2231,
+        "resp": 0.2906,
+        "ncomp": 1,
+        "naband": 0,
+        "scope": 1,
+        "fresh": 0.5385,
+        "repro": 0,
+        "foot": 0.5,
+        "act": 1
+      },
+      "labels": [
+        "good first issue"
+      ],
+      "updated_at": "2026-10-01T09:00:00.000Z",
+      "scanned_at": "2026-10-20T12:00:00.000Z"
+    }
+  ]
+}

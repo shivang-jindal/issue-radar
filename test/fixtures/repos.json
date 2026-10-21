@@ -1,0 +1,26 @@
+{
+  "acme/widgets": {
+    "id": 1001,
+    "name": "widgets",
+    "full_name": "acme/widgets",
+    "html_url": "https://github.com/acme/widgets",
+    "private": false,
+    "default_branch": "main",
+    "language": "TypeScript",
+    "pushed_at": "2026-10-19T09:00:00Z",
+    "archived": false,
+    "open_issues_count": 8
+  },
+  "beta/kit": {
+    "id": 1002,
+    "name": "kit",
+    "full_name": "beta/kit",
+    "html_url": "https://github.com/beta/kit",
+    "private": false,
+    "default_branch": "main",
+    "language": "Python",
+    "pushed_at": "2026-04-01T12:00:00Z",
+    "archived": false,
+    "open_issues_count": 2
+  }
+}

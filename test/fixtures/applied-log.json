@@ -1,0 +1,6 @@
+[
+  { "repo": "acme/widgets", "number": 90, "appliedAt": "2026-09-01T10:00:00Z", "merged": true, "mergedAt": "2026-09-04T10:00:00Z" },
+  { "repo": "acme/widgets", "number": 95, "appliedAt": "2026-09-10T10:00:00Z", "merged": false },
+  { "repo": "beta/kit", "number": 180, "appliedAt": "2026-10-01T10:00:00Z", "merged": false },
+  { "repo": "beta/kit", "number": 200, "appliedAt": "2026-08-15T10:00:00Z", "merged": true, "mergedAt": "2026-08-27T10:00:00Z" }
+]

@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "generatedAt": "2026-10-20T12:00:00.000Z",
+  "root": "C:/fixtures/widgets",
+  "languages": {
+    "ts": 0.45,
+    "js": 0.15,
+    "md": 0.1,
+    "json": 0.1,
+    "css": 0.07,
+    "yml": 0.05,
+    "sh": 0.03,
+    "toml": 0.02,
+    "other": 0.03
+  },
+  "clusters": {
+    "src": 0.62,
+    "test": 0.18,
+    "docs": 0.09,
+    "scripts": 0.05,
+    ".github": 0.04,
+    "config": 0.02
+  },
+  "typical": {
+    "fileCount": 140,
+    "medianFileBytes": 812,
+    "footprintFiles": 3
+  },
+  "labels": ["good first issue", "help wanted"]
+}

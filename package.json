@@ -1,0 +1,24 @@
+{
+  "name": "issue-radar",
+  "version": "0.1.0",
+  "description": "Find the GitHub issue you'll actually merge — issue discovery ranked by merge probability.",
+  "type": "module",
+  "bin": {
+    "radar": "./src/cli.js"
+  },
+  "scripts": {
+    "test": "node --test test/"
+  },
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "keywords": [
+    "good-first-issue",
+    "open-source",
+    "contribution",
+    "github-issues",
+    "first-pr",
+    "issue-triage"
+  ]
+}
