@@ -153,12 +153,12 @@ node src/cli.js scan <owner/repo> --offline --fixture recorded.json   # replay a
 node src/cli.js why <owner/repo>#42 --fixture recorded.json          # full signal breakdown
 node src/cli.js fingerprint                                          # build the local fingerprint (offline)
 node src/cli.js stats                                                # your application/merge history
-node --test test/                                                    # 93 tests
+node --test test/                                                    # 98 tests
 ```
 
 ## v0 status
 
-**Shipped, covered by 93 passing tests:**
+**Shipped, covered by 98 passing tests:**
 
 - **Scan**: ranks issues by merge probability from transparent, per-signal
   scoring - reproduction quality, freshness, maintainer response time,
@@ -166,6 +166,11 @@ node --test test/                                                    # 93 tests
   activity, and fingerprint match; `--min-score`, `--label`, `--lang`,
   `--hours`, `--limit`, and `--budget` (a hard API-call cap)
 - **Why**: the full signal-by-signal breakdown for one issue, with weights
+- **Watch**: `radar watch [owner/repo] --state <file> --iterations <n>` polls
+  repeatedly (all existing scan flags apply); the first pass prints every
+  match and writes `{number: updatedAt}` state, later passes print only new
+  or newly-updated issues, nothing new prints `no new issues` (exit 0), and
+  a corrupt state file is an honest stderr error with exit 3
 - **Fingerprint/stats**: a local, offline model of the issues you actually
   merged, plus application history computed from cached data
 - **Honesty rails**: `--offline` never touches the network (with `--fixture`,
@@ -177,7 +182,7 @@ node --test test/                                                    # 93 tests
   offline/fixture replay, fingerprint cold start, determinism (two scans,
   identical JSON), CLI exit codes
 
-**Deferred (v1+, documented, not silently dropped):** `radar watch`, the
+**Deferred (v1+, documented, not silently dropped):** the
 GitHub Action + PR badge, org-wide radar, time-to-first-PR analytics, and a
 learned model over the outcome corpus (v0's explicit signal weights are the
 transparent, gameable-on-purpose baseline).

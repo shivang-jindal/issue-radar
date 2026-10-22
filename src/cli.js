@@ -45,6 +45,8 @@ const FLAG_TYPES = {
   fixture: 'str',
   path: 'str',
   log: 'str',
+  state: 'str',
+  iterations: 'int',
 };
 const FLAG_ALIASES = { h: 'help', v: 'version' };
 
@@ -118,6 +120,7 @@ const GENERAL_HELP = `issue-radar — find the issue you'll actually merge
 Usage:
   radar scan [owner/repo…] [options]   rank open issues by merge probability
   radar why <owner/repo#n> [options]   full signal breakdown for one issue
+  radar watch [owner/repo…] --state <file> --iterations <n>   poll; print only new/updated
   radar fingerprint [options]          build your local fingerprint (offline)
   radar stats [options]                your application/merge history
   radar --help [command] · radar --version
@@ -164,6 +167,20 @@ const WHY_HELP = `radar why <owner/repo#n> — per-signal values, contributions,
   --fingerprint, --config, --label, …). Always scores the named issue
   regardless of --min-score.`;
 
+const WATCH_HELP = `radar watch [owner/repo…] — poll repeatedly, print only new/updated issues
+
+  --state <file>        required; state file mapping issue number -> updatedAt
+  --iterations <n>      required; number of passes (>= 1; 0 = run forever)
+  Same data flags as radar scan (--fixture, --offline, --refresh, --cache,
+  --fingerprint, --config, --label, --min-score, --json/--format, …).
+
+The first pass prints every match and writes the state file; later passes
+print only issues that are new or carry a newer updatedAt, then rewrite
+state. Nothing new prints "no new issues" and exits 0. A corrupt state
+file is an honest error on stderr and exit 3.
+
+Exit codes: 0 ok · 2 usage · 3 api/state error`;
+
 const FINGERPRINT_HELP = `radar fingerprint — languages, path clusters, and typical size from a local tree
 
   --path <dir>          repo to walk (default: current directory)
@@ -183,6 +200,8 @@ function helpFor(command) {
       return SCAN_HELP;
     case 'why':
       return WHY_HELP;
+    case 'watch':
+      return WATCH_HELP;
     case 'fingerprint':
       return FINGERPRINT_HELP;
     case 'stats':
@@ -436,6 +455,126 @@ function cmdFingerprint({ flags, ctx, cwd, err }) {
   return 0;
 }
 
+// Watch state: { <issue number>: <updatedAt> }. Missing file → start empty;
+// anything unreadable/malformed is an honest exit-3 error, never a silent reset.
+function loadWatchState(file) {
+  if (!existsSync(file)) return {};
+  let text;
+  try {
+    text = readFileSync(file, 'utf8');
+  } catch (e) {
+    throw new Error(`corrupt state file ${file}: ${e.message}`);
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    throw new Error(`corrupt state file ${file}: ${e.message}`);
+  }
+  if (parsed === null || typeof parsed !== 'object' || Array.isArray(parsed)) {
+    throw new Error(`corrupt state file ${file}: expected an object mapping issue numbers to updatedAt`);
+  }
+  const state = {};
+  for (const [key, value] of Object.entries(parsed)) {
+    if ((typeof value !== 'string' || value === '') && typeof value !== 'number') {
+      throw new Error(`corrupt state file ${file}: entry ${JSON.stringify(key)} must map to an updatedAt value`);
+    }
+    state[key] = value;
+  }
+  return state;
+}
+
+function isUpdatedSince(prev, updatedAt) {
+  if (prev === undefined || prev === null) return true; // never seen → new
+  const prevMs = typeof prev === 'number' ? prev : Date.parse(prev);
+  const curMs = updatedAt ? Date.parse(updatedAt) : NaN;
+  return Number.isFinite(curMs) && Number.isFinite(prevMs) && curMs > prevMs;
+}
+
+async function cmdWatch({ flags, args, ctx, err }) {
+  if (!flags.state) throw new UsageError('radar watch requires --state <file>');
+  if (flags.iterations === undefined) throw new UsageError('radar watch requires --iterations <n>');
+  if (flags.iterations < 0) throw new UsageError('--iterations must be >= 0 (0 = run forever)');
+
+  const cwd = ctx.cwd;
+  const cfg = loadConfigMerged(flags, cwd);
+  const data = makeDataEnv({ flags, ctx, cfg, err });
+
+  const repos = args.length ? args : (cfg.repos?.length ? cfg.repos : data.fixtureRepos ?? []);
+  if (!repos.length) {
+    throw new UsageError(
+      'no repos to watch — pass owner/repo… , set "repos" in radar.config.json, or use --fixture',
+    );
+  }
+  validateRepos(repos);
+
+  const format = flags.format ?? (flags.json ? 'json' : 'table');
+  if (!['table', 'json', 'md'].includes(format)) {
+    throw new UsageError(`--format must be table, json, or md (got "${format}")`);
+  }
+
+  const stateFile = resolvePath(flags.state, cwd);
+  let state;
+  try {
+    state = loadWatchState(stateFile);
+  } catch (e) {
+    err(`error: ${e.message}\n`);
+    return 3;
+  }
+
+  const fingerprint = loadFingerprintFile({ flags, cfg, cwd, err });
+
+  const iterations = flags.iterations;
+  for (let i = 0; iterations === 0 || i < iterations; i++) {
+    const out = await scan({
+      repos,
+      labels: cfg.labels,
+      minScore: cfg.minScore,
+      limit: cfg.limit,
+      shortlist: cfg.shortlist,
+      budget: cfg.budget,
+      refresh: Boolean(flags.refresh),
+      offline: Boolean(flags.offline) && !data.isFixture,
+      hours: flags.hours ?? null,
+      lang: flags.lang ?? null,
+      fetchFn: data.fetchFn,
+      now: data.now,
+      cachePath: cachePathFor({ flags, cfg, cwd, isFixture: data.isFixture }),
+      fingerprint,
+      baseUrl: cfg.baseUrl,
+      token: data.token,
+      weights: cfg.weights,
+      ttl: cfg.ttl,
+      warn: (m) => err(`${m}\n`),
+    });
+
+    for (const e of out.meta.dataErrors) err(`error: ${e}\n`);
+    if (out.meta.budgetHit) {
+      err(`warning: budget exhausted after ${out.meta.calls}/${out.meta.budget} calls — results are partial\n`);
+    }
+
+    // New or freshly-updated issues only (an empty/absent state prints all).
+    const fresh = out.results.filter((r) => isUpdatedSince(state[String(r.number)], r.updated_at));
+    if (fresh.length === 0) {
+      ctx.out('no new issues\n');
+    } else {
+      const filtered = { ...out, results: fresh };
+      if (format === 'json') ctx.out(renderJson(filtered));
+      else if (format === 'md') ctx.out(renderMd(filtered));
+      else ctx.out(renderTable(filtered));
+    }
+
+    // Rewrite state from this pass's snapshot, then decide the exit code.
+    const next = {};
+    for (const r of out.results) next[String(r.number)] = r.updated_at ?? null;
+    state = next;
+    writeJsonAtomic(stateFile, state);
+
+    if (out.meta.dataErrors.length) return 3;
+  }
+  return 0;
+}
+
 function cmdStats({ flags, ctx, cwd, err }) {
   const cfg = loadConfigMerged(flags, cwd);
   const raw = flags.log ?? cfg.logPath ?? join(homedir(), '.config', 'radar', 'applied.json');
@@ -489,6 +628,8 @@ export async function main(argv, ctx = {}) {
         return await cmdScan({ flags, args: rest, ctx: envCtx, err });
       case 'why':
         return await cmdWhy({ flags, args: rest, ctx: envCtx, err });
+      case 'watch':
+        return await cmdWatch({ flags, args: rest, ctx: envCtx, err });
       case 'fingerprint':
         return cmdFingerprint({ flags, ctx: envCtx, cwd, err });
       case 'stats':
