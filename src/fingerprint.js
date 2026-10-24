@@ -84,7 +84,11 @@ export function parseGitignore(text) {
         re += ch;
       }
     }
-    const source = anchored ? `^${re}` : `(^|/)${re}`;
+    // End-anchor with ($|/): without it, pattern `dist` also matched
+    // "distribution.js" and "mydist/x". Gitignore semantics are exact-segment
+    // matches — a bare name matches the file OR the directory at any depth
+    // (children are covered by the directory match during the walk).
+    const source = anchored ? `^${re}($|/)` : `(^|/)${re}($|/)`;
     rules.push({ negated, dirOnly, anchored, re: new RegExp(source) });
   }
   return rules;
@@ -276,7 +280,10 @@ export function matchScore({ paths = [], labels = [], touched = null, repoLangua
   const langName = repoLanguage ? String(repoLanguage).toLowerCase() : null;
   let detail = null;
   if (sub.value >= 0.5 && sub.hits > 0) {
-    const top = paths.find((p) => (p.includes('/') ? p.slice(0, p.indexOf('/')) : p) in (fingerprint.clusters ?? {}));
+    // Object.hasOwn, not `in`: a top-level dir named "constructor" or
+    // "toString" would hit Object.prototype and fake a cluster hit.
+    const clusters = fingerprint.clusters ?? {};
+    const top = paths.find((p) => Object.hasOwn(clusters, p.includes('/') ? p.slice(0, p.indexOf('/')) : p));
     detail = `your ${top ? top.split('/').slice(0, 2).join('/') : 'known'} work`;
   } else if (langName && share !== null && share > 0) {
     detail = `your ${langName} work`;

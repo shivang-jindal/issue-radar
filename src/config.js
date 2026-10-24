@@ -67,9 +67,12 @@ export function loadConfig(file) {
 export function mergeConfig(fileConfig, flags = {}) {
   const cfg = {
     ...DEFAULTS,
+    ...fileConfig,
+    // Deep-merge AFTER the spread: with `...fileConfig` last, a partial
+    // {"ttl": {"freshMs": …}} replaced the whole merged ttl object, silently
+    // dropping idleMs/dormantDays (and any partial weights → NaN scoring).
     ttl: { ...DEFAULTS.ttl, ...(fileConfig.ttl ?? {}) },
     weights: { ...DEFAULTS.weights, ...(fileConfig.weights ?? {}) },
-    ...fileConfig,
   };
   if (flags.repos) cfg.repos = flags.repos;
   if (flags.labels) cfg.labels = flags.labels;
@@ -79,5 +82,35 @@ export function mergeConfig(fileConfig, flags = {}) {
   if (flags.cachePath !== undefined) cfg.cachePath = flags.cachePath;
   if (flags.fingerprintPath !== undefined) cfg.fingerprintPath = flags.fingerprintPath;
   if (flags.baseUrl !== undefined) cfg.baseUrl = flags.baseUrl;
+  return validateConfig(cfg);
+}
+
+// Wrong-typed config values must fail loudly at load time (ConfigError →
+// exit 2), not propagate into scan math as undefined/NaN or iterate a bare
+// string as if it were an array of repos.
+export function validateConfig(cfg) {
+  for (const key of ['repos', 'labels']) {
+    const v = cfg[key];
+    if (v !== undefined && v !== null && (!Array.isArray(v) || v.some((x) => typeof x !== 'string'))) {
+      throw new ConfigError(`config: "${key}" must be an array of strings (got ${JSON.stringify(v)})`);
+    }
+  }
+  for (const key of ['minScore', 'limit', 'shortlist', 'budget']) {
+    const v = cfg[key];
+    if (v !== undefined && v !== null && (typeof v !== 'number' || !Number.isFinite(v))) {
+      throw new ConfigError(`config: "${key}" must be a number (got ${JSON.stringify(v)})`);
+    }
+  }
+  for (const [group, value] of [['weights', cfg.weights], ['ttl', cfg.ttl]]) {
+    if (value === undefined || value === null) continue;
+    if (typeof value !== 'object' || Array.isArray(value)) {
+      throw new ConfigError(`config: "${group}" must be an object`);
+    }
+    for (const [k, v] of Object.entries(value)) {
+      if (typeof v !== 'number' || !Number.isFinite(v)) {
+        throw new ConfigError(`config: ${group}.${k} must be a number (got ${JSON.stringify(v)})`);
+      }
+    }
+  }
   return cfg;
 }

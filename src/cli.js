@@ -47,6 +47,7 @@ const FLAG_TYPES = {
   log: 'str',
   state: 'str',
   iterations: 'int',
+  interval: 'int',
 };
 const FLAG_ALIASES = { h: 'help', v: 'version' };
 
@@ -60,6 +61,9 @@ class UsageError extends Error {
 
 function coerce(name, type, raw) {
   if (type === 'int') {
+    // Number('') is 0 — `--iterations ''` must be a usage error, not a
+    // silent "run forever".
+    if (String(raw).trim() === '') throw new UsageError(`--${name} expects an integer, got an empty value`);
     const n = Number(raw);
     if (!Number.isInteger(n)) throw new UsageError(`--${name} expects an integer, got "${raw}"`);
     return n;
@@ -169,8 +173,9 @@ const WHY_HELP = `radar why <owner/repo#n> — per-signal values, contributions,
 
 const WATCH_HELP = `radar watch [owner/repo…] — poll repeatedly, print only new/updated issues
 
-  --state <file>        required; state file mapping issue number -> updatedAt
+  --state <file>        required; state file mapping owner/repo#number -> updatedAt
   --iterations <n>      required; number of passes (>= 1; 0 = run forever)
+  --interval <seconds>  pause between passes (default 60; 0 = no pause)
   Same data flags as radar scan (--fixture, --offline, --refresh, --cache,
   --fingerprint, --config, --label, --min-score, --json/--format, …).
 
@@ -525,6 +530,10 @@ async function cmdWatch({ flags, args, ctx, err }) {
   const fingerprint = loadFingerprintFile({ flags, cfg, cwd, err });
 
   const iterations = flags.iterations;
+  const intervalSec = flags.interval ?? 60;
+  if (intervalSec < 0) throw new UsageError('--interval must be >= 0 seconds (0 = no pause between passes)');
+  // injectable for tests (ctx.sleep); default real timer
+  const sleep = ctx.sleep ?? ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
   for (let i = 0; iterations === 0 || i < iterations; i++) {
     const out = await scan({
       repos,
@@ -554,7 +563,9 @@ async function cmdWatch({ flags, args, ctx, err }) {
     }
 
     // New or freshly-updated issues only (an empty/absent state prints all).
-    const fresh = out.results.filter((r) => isUpdatedSince(state[String(r.number)], r.updated_at));
+    // Keyed `owner/repo#number`: bare issue numbers collide across repos
+    // (#42 in two watched repos would mask each other's updates).
+    const fresh = out.results.filter((r) => isUpdatedSince(state[`${r.repo}#${r.number}`], r.updated_at));
     if (fresh.length === 0) {
       ctx.out('no new issues\n');
     } else {
@@ -566,11 +577,15 @@ async function cmdWatch({ flags, args, ctx, err }) {
 
     // Rewrite state from this pass's snapshot, then decide the exit code.
     const next = {};
-    for (const r of out.results) next[String(r.number)] = r.updated_at ?? null;
+    for (const r of out.results) next[`${r.repo}#${r.number}`] = r.updated_at ?? null;
     state = next;
     writeJsonAtomic(stateFile, state);
 
     if (out.meta.dataErrors.length) return 3;
+    // Pause between passes — polling back-to-back hammers the API and burns
+    // a core. No sleep after the final pass of a bounded run.
+    const lastPass = iterations !== 0 && i + 1 >= iterations;
+    if (!lastPass && intervalSec > 0) await sleep(intervalSec * 1000);
   }
   return 0;
 }

@@ -62,10 +62,24 @@ function io(cwd) {
 }
 
 function watchArgs(fixture, stateFile, extra = []) {
-  return ['watch', REPO, '--fixture', fixture, '--state', stateFile, '--iterations', '1', '--min-score', '0', ...extra];
+  return [
+    'watch',
+    REPO,
+    '--fixture',
+    fixture,
+    '--state',
+    stateFile,
+    '--iterations',
+    '1',
+    '--interval',
+    '0', // tests must not sleep between passes
+    '--min-score',
+    '0',
+    ...extra,
+  ];
 }
 
-test('watch iteration 1 prints every match and writes {number: updatedAt} state', async (t) => {
+test('watch iteration 1 prints every match and writes {owner/repo#number: updatedAt} state', async (t) => {
   const dir = scratch(t);
   const fixture = fixtureFile(dir, 'a.json', [
     issue(3, '2026-10-10T09:00:00Z'),
@@ -81,8 +95,8 @@ test('watch iteration 1 prints every match and writes {number: updatedAt} state'
 
   const state = JSON.parse(readFileSync(stateFile, 'utf8'));
   assert.deepEqual(state, {
-    '3': '2026-10-10T09:00:00.000Z',
-    '5': '2026-10-12T10:00:00.000Z',
+    'acme/widgets#3': '2026-10-10T09:00:00.000Z',
+    'acme/widgets#5': '2026-10-12T10:00:00.000Z',
   });
 });
 
@@ -108,9 +122,9 @@ test('replay: iteration 2 prints only new issue #7; identical replay says no new
   assert.doesNotMatch(second.out.stdout, /acme\/widgets#3/);
   assert.doesNotMatch(second.out.stdout, /acme\/widgets#5/);
   assert.deepEqual(JSON.parse(readFileSync(stateFile, 'utf8')), {
-    '3': '2026-10-10T09:00:00.000Z',
-    '5': '2026-10-12T10:00:00.000Z',
-    '7': '2026-10-19T11:00:00.000Z',
+    'acme/widgets#3': '2026-10-10T09:00:00.000Z',
+    'acme/widgets#5': '2026-10-12T10:00:00.000Z',
+    'acme/widgets#7': '2026-10-19T11:00:00.000Z',
   });
 
   const third = io(dir);
@@ -136,6 +150,8 @@ test('--iterations 2 in one invocation: first pass prints all, second pass finds
     stateFile,
     '--iterations',
     '2',
+    '--interval',
+    '0',
     '--min-score',
     '0',
   ];
@@ -145,8 +161,8 @@ test('--iterations 2 in one invocation: first pass prints all, second pass finds
   assert.match(env.out.stdout, /acme\/widgets#5/);
   assert.ok(env.out.stdout.includes('no new issues'), 'second pass reports nothing new');
   assert.deepEqual(JSON.parse(readFileSync(stateFile, 'utf8')), {
-    '3': '2026-10-10T09:00:00.000Z',
-    '5': '2026-10-12T10:00:00.000Z',
+    'acme/widgets#3': '2026-10-10T09:00:00.000Z',
+    'acme/widgets#5': '2026-10-12T10:00:00.000Z',
   });
 });
 
@@ -196,4 +212,38 @@ test('watch requires --state and --iterations (usage exit 2)', async (t) => {
   );
   assert.equal(codeC, 2);
   assert.match(negative.out.stderr, /--iterations must be >= 0/);
+});
+
+test('--iterations "" is a usage error, not a silent "run forever" (Number("") === 0)', async (t) => {
+  const dir = scratch(t);
+  const fixture = fixtureFile(dir, 'a.json', [issue(3, '2026-10-10T09:00:00Z')]);
+
+  const env = io(dir);
+  const code = await main(
+    ['watch', REPO, '--fixture', fixture, '--state', join(dir, 's.json'), '--iterations', ''],
+    env.ctx,
+  );
+  assert.equal(code, 2);
+  assert.match(env.out.stderr, /--iterations expects an integer/);
+});
+
+test('watch sleeps --interval seconds between passes (injected timer, none after the last)', async (t) => {
+  const dir = scratch(t);
+  const fixture = fixtureFile(dir, 'a.json', [issue(3, '2026-10-10T09:00:00Z')]);
+  const stateFile = join(dir, 'state.json');
+
+  const slept = [];
+  const env = io(dir);
+  env.ctx.sleep = async (ms) => {
+    slept.push(ms);
+  };
+
+  const code = await main(
+    ['watch', REPO, '--fixture', fixture, '--state', stateFile,
+      '--iterations', '3', '--interval', '5', '--min-score', '0'],
+    env.ctx,
+  );
+  assert.equal(code, 0, env.out.stderr);
+  // pauses after pass 1 and pass 2, never after the final pass
+  assert.deepEqual(slept, [5000, 5000]);
 });

@@ -2,7 +2,7 @@
 // TTL depends on repo activity (pushed_at): fresh repos 15m, idle repos 6h.
 // All writes go through a temp file + rename (Windows-safe overwrite).
 
-import { existsSync, mkdirSync, readFileSync, renameSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 export const CACHE_VERSION = 1;
@@ -66,11 +66,19 @@ export function createCache({ path: cachePath = null, now = () => new Date(), tt
         renameSync(tmp, cachePath);
       } catch {
         // rename can fail if the destination is locked — fall back to direct write
+        let wrote = false;
         try {
           writeFileSync(cachePath, body, 'utf8');
+          wrote = true;
         } finally {
           try {
-            if (existsSync(tmp)) renameSync(tmp, `${tmp}.old`);
+            if (existsSync(tmp)) {
+              // Success → drop the tmp (the old unconditional rename to `.old`
+              // accumulated junk next to the cache on every locked rename).
+              // Both writes failed → keep one `.old` as recovery data.
+              if (wrote) rmSync(tmp, { force: true });
+              else renameSync(tmp, `${tmp}.old`);
+            }
           } catch {
             /* ignore cleanup errors */
           }
